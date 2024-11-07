@@ -15,7 +15,25 @@ public class LoopStationTester {
    * @return true if createPod() is functioning correctly, false otherwise
    */
   public static boolean testCreatePod() {
-    return false;
+    LoopStation ls = new LoopStation();
+
+    // Fill with dummy pods
+    ls.createPod(1, true);
+    ls.createPod(1, true);
+    ls.createPod(1, false);
+    ls.createPod(1, false);
+
+    // Add tester pods
+    Pod p1 = ls.createPod(5, true);
+    Pod p2 = ls.createPod(5, false);
+
+    boolean valid = true;
+
+    // Check that returned pod is in correct position
+    valid &= p1.equals(ls.waitingFirst.head.getPod());
+    valid &= p2.equals(ls.waitingEconomy.tail.getPod());
+
+    return valid;
   }
   
   /**

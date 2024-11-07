@@ -143,13 +143,18 @@ public class Track implements ListADT<Pod> {
             podClass = newElement.getPodClass();
         } catch(MalfunctioningPodException e) {return;}
 
+        LinkedNode newNode = new LinkedNode(newElement);
+
+        if (this.head == null) {
+            this.head = newNode;
+            this.tail = newNode;
+        }
+
         if (podClass == Pod.ECONOMY) {
-            LinkedNode newNode = new LinkedNode(newElement);
             this.tail.setNext(newNode);
             newNode.setPrev(this.tail);
             this.tail = newNode;
         } else {
-            LinkedNode newNode = new LinkedNode(newElement);
             newNode.setNext(this.head);
             this.head.setPrev(newNode);
             this.head = newNode;
@@ -218,6 +223,14 @@ public class Track implements ListADT<Pod> {
 
         while (curr != null) {
             if (currIdx == index) {
+                if (this.size == 1) {
+                    Pod p = this.head.getPod();
+                    this.head = null;
+                    this.tail = null;
+                    this.size = 0;
+                    return p;
+                }
+
                 Pod p = curr.getPod();
                 LinkedNode prev = curr.getPrev();
                 LinkedNode next = curr.getNext();
