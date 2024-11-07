@@ -183,4 +183,16 @@ public class Pod {
         this.podClass == p.podClass && this.isFunctional == p.isFunctional;
   }
 
+  /**
+   * Returns a String representation of the passenger list of this pod, with a {@code *} at the end if the pod is not functional
+   * @return a String representation of the passenger list
+   */
+  @Override
+  public String toString() {
+    if (!this.isFunctional) {
+      return Arrays.toString(this.passengerList) + "*";
+    }
+    return Arrays.toString(this.passengerList);
+  }
+
 }

@@ -69,7 +69,7 @@ public class LoopStationTester {
     System.out.println("testCreatePod: "+(test1?"PASS":"fail"));
     
     boolean test2 = testLaunchPod();
-    System.out.println("testLaunchPod: "+(test2?"PASS":"fail"));
+    System.out.println("testLaunchPod: "+(test2?"P  ASS":"fail"));
     
     boolean test3 = testClearMalfunctioning();
     System.out.println("testClearMalfunctioning: "+(test3?"PASS":"fail"));
