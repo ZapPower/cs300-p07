@@ -29,8 +29,10 @@ public class Track implements ListADT<Pod> {
         LinkedNode curr = this.head;
         Pod currPod = null;
         while (curr != null) {
+            // Iterate through linked list
             currPod = curr.getPod();
             try {
+                // If first class passenger, put into first non-empty first class pod
                 if (currPod.getPodClass() == Pod.FIRST && isFirstClass) {
                     if (!currPod.isFull()) {
                         this.size++;
@@ -38,6 +40,7 @@ public class Track implements ListADT<Pod> {
                         return true;
                     }
                 } else {
+                    // Otherwise, put into first non-empty economy pod
                     if (!currPod.isFull()) {
                         this.size++;
                         currPod.addPassenger(name);
@@ -63,12 +66,14 @@ public class Track implements ListADT<Pod> {
         Pod currPod = null;
 
         while (curr != null) {
+            // Iterate through linked list, counting index
             currPod = curr.getPod();
             try {
                 if (currPod.containsPassenger(name)) {
+                    // If passenger found, return the pod index
                     return currIdx;
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {/* Do nothing if malfunctioning */}
 
             currIdx++;
             curr = curr.getNext();
@@ -87,10 +92,12 @@ public class Track implements ListADT<Pod> {
         Pod currPod = null;
         int idx = 0;
 
+        // Iterate through linked list, counting index
         while (curr != null) {
             currPod = curr.getPod();
 
             try {
+                // Try any method that would throw a MalfunctioningPodException to test for malfunction without triggering one
                 currPod.getPodClass();
             } catch (MalfunctioningPodException e) {
                 return idx;
@@ -145,11 +152,15 @@ public class Track implements ListADT<Pod> {
 
         LinkedNode newNode = new LinkedNode(newElement);
 
+        // EDGE CASE: empty list
         if (this.head == null) {
             this.head = newNode;
             this.tail = newNode;
+            this.size++;
+            return;
         }
 
+        // Add to tail if economy, add to head if first
         if (podClass == Pod.ECONOMY) {
             this.tail.setNext(newNode);
             newNode.setPrev(this.tail);
@@ -159,6 +170,7 @@ public class Track implements ListADT<Pod> {
             this.head.setPrev(newNode);
             this.head = newNode;
         }
+        this.size++;
     }
 
     /**
@@ -170,6 +182,7 @@ public class Track implements ListADT<Pod> {
      * @throws IndexOutOfBoundsException if the given index is invalid
      */
     public Pod get(int index) {
+        // Check index bounds
         if (index >= this.size || index < 0) {
             throw new IndexOutOfBoundsException("Pod index out of bounds");
         }
@@ -178,7 +191,9 @@ public class Track implements ListADT<Pod> {
         int currIdx = 0;
 
         while (curr != null) {
+            // Iterate through linked list, counting index
             if (currIdx == index) {
+                // If index found, return the pod at that index
                 return curr.getPod();
             }
             currIdx++;
@@ -198,11 +213,14 @@ public class Track implements ListADT<Pod> {
         LinkedNode curr = this.head;
 
         while (curr != null) {
+            // Iterate through linked list to find pod
             if (curr.getPod().equals(toFind)) {
                 return true;
             }
             curr = curr.getNext();
         }
+
+        // If none found, return false
         return false;
     }
 
@@ -214,6 +232,7 @@ public class Track implements ListADT<Pod> {
      * @throws IndexOutOfBoundsException if the given index is invalid
      */
     public Pod remove(int index) {
+        // Check for index bounds
         if (index >= this.size || index < 0) {
             throw new IndexOutOfBoundsException("Pod index out of bounds");
         }
@@ -221,8 +240,10 @@ public class Track implements ListADT<Pod> {
         LinkedNode curr = this.head;
         int currIdx = 0;
 
+        // Count through linked list until reached index
         while (curr != null) {
             if (currIdx == index) {
+                // EDGE CASE: Only 1 pod left
                 if (this.size == 1) {
                     Pod p = this.head.getPod();
                     this.head = null;
@@ -231,17 +252,42 @@ public class Track implements ListADT<Pod> {
                     return p;
                 }
 
+                // EDGE CASE: remove first pod
+                if (index == 0) {
+                    Pod p = curr.getPod();
+                    this.head = this.head.getNext();
+                    this.head.getPrev().setNext(null);
+                    this.head.setPrev(null);
+                    this.size--;
+                    return p;
+                }
+
+                // EDGE CASE: remove last pod
+                if (index == this.size - 1) {
+                    Pod p = curr.getPod();
+                    this.tail = this.tail.getPrev();
+                    this.tail.getNext().setPrev(null);
+                    this.tail.setNext(null);
+                    this.size--;
+                    return p;
+                }
+
+                // Remove middle pod
                 Pod p = curr.getPod();
                 LinkedNode prev = curr.getPrev();
                 LinkedNode next = curr.getNext();
                 prev.setNext(next);
                 next.setPrev(prev);
+                curr.setNext(null);
+                curr.setPrev(null);
+                this.size--;
                 return p;
             }
             currIdx++;
             curr = curr.getNext();
         }
 
+        // If no index was found, throw an error
         throw new IndexOutOfBoundsException("Pod index invalid");
     }
 

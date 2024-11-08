@@ -1,5 +1,7 @@
 // TODO complete file header
 
+import java.util.NoSuchElementException;
+
 /**
  * This class tests the LoopStation class, and by extension, the Track class
  */
@@ -47,7 +49,73 @@ public class LoopStationTester {
    * @return true if launchPod() is functioning correctly, false otherwise
    */
   public static boolean testLaunchPod() {
-    return false;
+    boolean valid = true;
+
+    LoopStation ls = new LoopStation();
+    
+    try {
+      ls.launchPod();
+      valid = false;
+    } catch (NoSuchElementException e) {}
+    catch (Exception e) {
+      return false;
+    }
+    
+    ls.createPod(1, true);
+    // Get second to first pod to check removal
+    Pod p1 = ls.createPod(2, true);
+    ls.createPod(1, true);
+
+    ls.createPod(1, false);
+    Pod p2 = ls.createPod(1, false);
+    ls.createPod(1, false);
+    
+    try {
+      p1.addPassenger("Dave");
+      p1.addPassenger("John");
+    } catch (MalfunctioningPodException e) {
+      System.out.println(e);
+    }
+
+    try {
+      ls.launchPod();
+      
+    } catch (Exception e) {
+      return false;
+    }
+
+    valid &= ls.waitingFirst.head.getPod().equals(p1);
+
+    try {
+      for (int i = 0; i < 2; i++) {
+        ls.launchPod();
+      }
+    } catch (Exception e) {
+      return false;
+    }
+
+    valid &= ls.waitingFirst.isEmpty();
+
+
+    try {
+      ls.launchPod();
+    } catch (Exception e) {
+      return false;
+    }
+
+    valid &= ls.waitingEconomy.tail.getPod().equals(p2);
+
+    try {
+      for (int i = 0; i < 2; i++) {
+        ls.launchPod();
+      }
+    } catch (Exception e) {
+      return false;
+    }
+
+    valid &= ls.waitingEconomy.isEmpty();
+
+    return valid;
   }
   
   /**
@@ -87,7 +155,7 @@ public class LoopStationTester {
     System.out.println("testCreatePod: "+(test1?"PASS":"fail"));
     
     boolean test2 = testLaunchPod();
-    System.out.println("testLaunchPod: "+(test2?"P  ASS":"fail"));
+    System.out.println("testLaunchPod: "+(test2?"PASS":"fail"));
     
     boolean test3 = testClearMalfunctioning();
     System.out.println("testClearMalfunctioning: "+(test3?"PASS":"fail"));
