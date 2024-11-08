@@ -113,28 +113,24 @@ public class LoopStation {
      * @return the total number of passengers in functional Pods currently being served by this LoopStation
      */
     public int getNumPassengers() {
-        LinkedNode curr = this.launched.head;
         int numPassengers = 0;
 
-        while (curr != null) {
-            try {
-                numPassengers += curr.getPod().getNumPassengers();
-            } catch (MalfunctioningPodException e) {}
+        numPassengers += countNumPassengers(this.waitingEconomy);
+        numPassengers += countNumPassengers(this.waitingFirst);
+        numPassengers += countNumPassengers(this.launched);
 
-            curr = curr.getNext();
-        }
+        return numPassengers;
+    }
 
-        curr = this.waitingEconomy.head;
-
-        while (curr != null) {
-            try {
-                numPassengers += curr.getPod().getNumPassengers();
-            } catch (MalfunctioningPodException e) {}
-
-            curr = curr.getNext();
-        }
-
-        curr = this.waitingFirst.head;
+    /**
+     * Private helper method for counting the number of passengers on a track
+     * 
+     * @param t Track to count
+     * @return Number of passengers on given track
+     */
+    private int countNumPassengers(Track t) {
+        LinkedNode curr = t.head;
+        int numPassengers = 0;
 
         while (curr != null) {
             try {
