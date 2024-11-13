@@ -1,4 +1,29 @@
-// TODO complete file header
+//////////////// FILE HEADER (INCLUDE IN EVERY FILE) //////////////////////////
+//
+// Title:    P07 - Hyperloop
+// Course:   CS 300 Fall 2024
+//
+// Author: Tomasz Sobkowicz-Oliveira 
+// Email: sobkowiczoli@wisc.edu
+// Lecturer: Hobbes LeGault
+//
+//////////////////// PAIR PROGRAMMERS COMPLETE THIS SECTION ///////////////////
+// 
+// Partner Name: David Greenberg
+// Partner Email: dgreenberg8@wisc.edu
+// Partner Lecturer's Name: Hobbes LeGault
+// 
+// VERIFY THE FOLLOWING BY PLACING AN X NEXT TO EACH TRUE STATEMENT:
+//   X Write-up states that pair programming is allowed for this assignment.
+//   X We have both read and understand the course Pair Programming Policy.
+//   X We have registered our team prior to the team registration deadline.
+//
+//////////////////////// ASSISTANCE/HELP CITATIONS ////////////////////////////
+//
+// Persons: NONE
+// Online Sources: NONE
+//
+///////////////////////////////////////////////////////////////////////////////
 
 import java.util.NoSuchElementException;
 
