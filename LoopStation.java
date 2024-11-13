@@ -67,14 +67,14 @@ public class LoopStation {
    *
    * @throws NoSuchElementException if no Pods are waiting to launch
    */
-  public void launchPod() throws NoSuchElementException {
+  public void launchPod() {
     if (!this.waitingFirst.isEmpty()) {
-      // add from start of first class track
-      this.launched.add(this.waitingFirst.remove(0));
+      // add least-recent pod which is at the end
+      this.launched.add(this.waitingFirst.remove(this.waitingFirst.size() - 1));
       return;
     } else if (!this.waitingEconomy.isEmpty()) {
-      // add from end of economy track
-      this.launched.add(this.waitingEconomy.remove(this.waitingEconomy.size() - 1));
+      // add least recent pod which is at the start
+      this.launched.add(this.waitingEconomy.remove(0));
       return;
     }
 

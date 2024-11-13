@@ -160,7 +160,7 @@ public class Track implements ListADT<Pod> {
   public void add(Pod newElement) {
     int podClass = 0;
 
-    // test if pod is functional, and return early if it isn't
+    // test if pod is functional, and don't add it if it isn't
     try {
       podClass = newElement.getPodClass();
     } catch(MalfunctioningPodException e) {return;}

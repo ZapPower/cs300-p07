@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
  * This class tests the LoopStation class, and by extension, the Track class
  */
 public class LoopStationTester {
-  
+
   /**
    * Checks the correctness of the createPod() method. This method should:
    * - create a Pod with the given capacity and podClass
@@ -31,15 +31,16 @@ public class LoopStationTester {
 
     boolean valid = true;
 
-    // Check that returned pod is in correct position
+    // Check that returned pods are in correct position
     valid &= p1.equals(ls.waitingFirst.head.getPod());
     valid &= p2.equals(ls.waitingEconomy.tail.getPod());
 
     return valid;
   }
-  
+
   /**
-   * Checks the correctness of the launchPod() method. This method should:
+   * Checks the correctness of the launchPod() method.
+   * This method should:
    * - throw a NoSuchElementException if no pods are waiting to launch
    * - launch first class pods from the END of the waitingFirst track
    * - launch economy class pods from the BEGINNING of the waitingEconomy track
@@ -52,50 +53,26 @@ public class LoopStationTester {
     boolean valid = true;
 
     LoopStation ls = new LoopStation();
-    
+
     try {
       ls.launchPod();
-      valid = false;
-    } catch (NoSuchElementException e) {}
+      return false; // No exception was thrown
+    } catch (NoSuchElementException e) {/* Method throws the correct exception */}
     catch (Exception e) {
-      return false;
+      return false; // Any other exception is incorrect
     }
-    
+
+    // First class pods
+    ls.createPod(4, true); // this pod should be removed
+    Pod p1 = ls.createPod(3, true); // this should be the new tail
+    ls.createPod(2, true);
     ls.createPod(1, true);
-    // Get second to first pod to check removal
-    Pod p1 = ls.createPod(2, true);
-    ls.createPod(1, true);
 
-    ls.createPod(1, false);
-    Pod p2 = ls.createPod(1, false);
-    ls.createPod(1, false);
-    
-    try {
-      p1.addPassenger("Dave");
-      p1.addPassenger("John");
-    } catch (MalfunctioningPodException e) {
-      System.out.println(e);
-    }
-
-    try {
-      ls.launchPod();
-      
-    } catch (Exception e) {
-      return false;
-    }
-
-    valid &= ls.waitingFirst.head.getPod().equals(p1);
-
-    try {
-      for (int i = 0; i < 2; i++) {
-        ls.launchPod();
-      }
-    } catch (Exception e) {
-      return false;
-    }
-
-    valid &= ls.waitingFirst.isEmpty();
-
+    // Economy pods
+    ls.createPod(1, false); // this pod should be removed
+    Pod p2 = ls.createPod(2, false); // this should be the new head 
+    ls.createPod(3, false);
+    ls.createPod(4, false);
 
     try {
       ls.launchPod();
@@ -103,12 +80,32 @@ public class LoopStationTester {
       return false;
     }
 
-    valid &= ls.waitingEconomy.tail.getPod().equals(p2);
+    valid &= ls.waitingFirst.tail.getPod().equals(p1);
 
     try {
-      for (int i = 0; i < 2; i++) {
-        ls.launchPod();
-      }
+      // launch the three remaining pods in first class
+      ls.launchPod();
+      ls.launchPod();
+      ls.launchPod();
+    } catch (Exception e) {
+      return false;
+    }
+
+    valid &= ls.waitingFirst.isEmpty(); // list should be empty
+
+    try {
+      ls.launchPod();
+    } catch (Exception e) {
+      return false;
+    }
+
+    valid &= ls.waitingEconomy.head.getPod().equals(p2);
+
+    try {
+      // launch the three remaining pods
+      ls.launchPod();
+      ls.launchPod();
+      ls.launchPod();
     } catch (Exception e) {
       return false;
     }
@@ -117,9 +114,10 @@ public class LoopStationTester {
 
     return valid;
   }
-  
+
   /**
-   * Checks the correctness of the clearMalfunctioning() method. This method should:
+   * Checks the correctness of the clearMalfunctioning() method.
+   * This method should:
    * - repeatedly check the launched track for malfunctioning pods
    * - remove those pods correctly
    * - report the number of pods it removed once there are no longer any malfunctioning pods
@@ -138,31 +136,104 @@ public class LoopStationTester {
    * @return true if clearMalfunctioning() is functioning correctly, false otherwise
    */
   public static boolean testClearMalfunctioning() {
-    return false;
+    boolean valid = true;
+
+    LoopStation ls = new LoopStation();
+    
+    // record the expected track after calling clearMalfunctioning()
+    Track clearTrack = new Track();
+
+    // create and launch 8 pods with arbitrary atributes and
+    // set 3 of them to be malfunctioning
+    for (int i = 0; i < 8; ++i) {
+      Pod pod = ls.createPod(i + 1, (i % 2 == 0));
+
+      try {
+        ls.launchPod();
+      } catch (NoSuchElementException e) {
+        return false;
+      }
+      
+      if (i == 0 || i == 5 || i == 7)
+        pod.setNonFunctional();
+      else
+        clearTrack.add(pod);
+    }
+
+    int removedCount = ls.clearMalfunctioning();
+
+    valid &= removedCount == 3; // verify the correct removal count
+    
+    // compare launched track with expectation
+    for (int i = 0; i < clearTrack.size(); ++i) {
+      Pod clearPod = clearTrack.get(i);
+      Pod testPod;
+      try {
+        testPod = ls.launched.get(i);
+      } catch (Exception e) {return false;}
+
+      valid &= clearPod.equals(testPod);
+    }
+
+    return valid;
   }
-  
+
   /**
-   * Checks the correctness of the three getNumXXX() methods from LoopStation. This will require
-   * adding Pods of various types, loading them with passengers, and launching them.
+   * Checks the correctness of the three getNumXXX() methods from LoopStation.
+   * This will require adding Pods of various types, loading them with passengers, and launching
+   * them.
+   *
    * @return true if the getNumXXX() methods are all functioning correctly, false otherwise
    */
   public static boolean testGetNums() {
-    return false;
+    boolean valid = true;
+
+    LoopStation ls = new LoopStation();
+    int passengerCount = 0;
+
+    // create 10 pods with arbitrary atributes and number of passengers
+    for (int i = 0; i < 10; ++i) {
+      Pod pod = ls.createPod(2 * i + 1, i % 3 == 0);
+
+      // add 2i + 1 passengers
+      for (int j = 0; j < 2 * i + 1; ++j) {
+        try { 
+          pod.addPassenger(i + " " + j);
+          passengerCount++;
+        } catch (Exception e) {/* Ignore malfunctioning pods */}
+      }
+    }
+
+    // launch 6 pods
+    for (int i = 0; i < 6; ++i) {
+      try {
+        ls.launchPod();
+      } catch (NoSuchElementException e) {
+        return false;
+      }
+    }
+
+    // perform the tests
+    valid &= ls.getNumLaunched() == 6;
+    valid &= ls.getNumPassengers() == passengerCount; 
+    valid &= ls.getNumWaiting() == 4;
+
+    return valid;
   }
 
   public static void main(String[] args) {
     boolean test1 = testCreatePod();
     System.out.println("testCreatePod: "+(test1?"PASS":"fail"));
-    
+
     boolean test2 = testLaunchPod();
     System.out.println("testLaunchPod: "+(test2?"PASS":"fail"));
-    
+
     boolean test3 = testClearMalfunctioning();
     System.out.println("testClearMalfunctioning: "+(test3?"PASS":"fail"));
-    
+
     boolean test4 = testGetNums();
     System.out.println("testGetNums: "+(test4?"PASS":"fail"));
-    
+
     System.out.println("ALL TESTS: "+((test1&&test2&&test3&&test4)?"PASS":"fail"));
   }
 
